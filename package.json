@@ -1,0 +1,33 @@
+{
+  "name": "onechain-clone",
+  "version": "1.0.0",
+  "description": "learn blockchain",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junha-ahn/onechain-clone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/junha-ahn/onechain-clone/issues"
+  },
+  "homepage": "https://github.com/junha-ahn/onechain-clone#readme",
+  "devDependencies": {
+    "@types/node": "^12.12.31",
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.8.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.149",
+    "crypto-js": "^4.0.0",
+    "fs": "0.0.1-security",
+    "lodash": "^4.17.15",
+    "merkle": "^0.6.0"
+  }
+}
