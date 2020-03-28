@@ -10,17 +10,19 @@ export default (service: Function) => async (req: express.Request, res: express.
   try {
     const result: Result = await service(req);
 
-    response(result || response({
-      message: '반환값이 명시되지 않았습니다'
-    }));
+    response(result || {
+      httpCode: 500,
+      message: "반환값이 명시되지 않았습니다"
+    });
   } catch (e) {
     if (config.NODE_ENV !== 'test') console.error(e)
     if (e.status !== undefined) {
       const httpCode = e.httpCode || 500;
       return res.status(httpCode).json(e);
     }
-    response(response({
+    response({
+      httpCode: 500,
       message: e.message
-    }));
+    });
   }
 };

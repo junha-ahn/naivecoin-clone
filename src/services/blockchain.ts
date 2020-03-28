@@ -1,3 +1,4 @@
+import * as path from 'path'
 import * as fs from 'fs'
 import * as CryptoJS from 'crypto-js'
 import * as merkle from 'merkle'
@@ -21,7 +22,6 @@ class Block {
   constructor(public header: BlockHeader, public data: string[]) {}
 }
 
-const getCurrentVersion = (): string => JSON.parse(fs.readFileSync('../pakage.json', 'utf8')).version
 const getCurrentTimestamp = (): number => Math.round(new Date().getTime() / 1000)
 const getMerkleRoot = (data): string => {
   const merkleTree= merkle("sha256").sync(data)
@@ -57,13 +57,15 @@ const isVaildChain = (blockchainToValidate: Blockchain): boolean => {
 }
 const blockchain:Blockchain = [getGenesisBlock()]
 
-export default class BlockchainService {
+export default class BlockchainService {  
+  static getCurrentVersion = (): string => JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf8')).version
+
   static getBlockChain = ():Blockchain => blockchain
 
   static getLatestBlock = ():Block => blockchain[blockchain.length - 1]
   static generateNextBlock = (blockData) => {
     const previosBlock = BlockchainService.getLatestBlock()
-    const currentVersion = getCurrentVersion()
+    const currentVersion = BlockchainService.getCurrentVersion()
     const nextIndex = previosBlock.header.index + 1
     const previosHash = caclulateHashForBlcok(previosBlock)
     const nextTimestamp = getCurrentTimestamp()
