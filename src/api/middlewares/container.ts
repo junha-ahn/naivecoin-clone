@@ -3,11 +3,12 @@ import * as express from 'express';
 import config from '../../config'
 import sendResponse from './response'
 
+import {Result} from '../../types' 
 
 export default (service: Function) => async (req: express.Request, res: express.Response) => {
   const response = sendResponse(res);
   try {
-    const result = await service(req);
+    const result: Result = await service(req);
 
     response(result || response({
       message: '반환값이 명시되지 않았습니다'

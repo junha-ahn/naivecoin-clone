@@ -1,8 +1,4 @@
-interface Result {
-  httpCode?: number,
-  message?: String,
-  data?: any, 
-}
+import {Result} from '../../types' 
 
 export default res => (result:Result = {}) => (
   res.status(result.httpCode || 500).send({
