@@ -1,10 +1,14 @@
 import { Router, Request, Response } from 'express';
+import container from '../middlewares/container'
 const route = Router();
 
 export default (app: Router) => {
   app.use('/', route);
 
-  route.get('/', (req: Request, res: Response) => {
-    return res.status(200).send('hello World')
-  });
+  route.get('/', container(async (res) => {
+    return {
+      httpCode: 200,
+      message: 'Hello World'
+    }
+  }));
 };
