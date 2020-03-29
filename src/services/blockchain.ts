@@ -41,21 +41,17 @@ const getGenesisBlock = (): Block => {
 }
 
 const caclulateHash = (version: Version, index: number, previosHash: Hash, timestamp: number, merkleRoot: string): Hash => CryptoJS.SHA256(version + index + previosHash + timestamp + merkleRoot).toString()
-const caclulateHashForBlcok = (b: Block): Hash => caclulateHash(b.header.version, b.header.index, b.header.previosHash, b.header.timestamp, b.header.merkleRoot)
+const caclulateHashForBlock = (b: Block): Hash => caclulateHash(b.header.version, b.header.index, b.header.previosHash, b.header.timestamp, b.header.merkleRoot)
 
 const isVaildBlockStructure = (b: Block): boolean => b instanceof Block 
 const isVaildNewBlock = (newBlock: Block, previosBlock: Block): boolean => {
   if (!isVaildBlockStructure(newBlock)) return false
   if (previosBlock.header.index +1 !== newBlock.header.index) return false
-  if (caclulateHashForBlcok(previosBlock) !== newBlock.header.previosHash) return false
+  if (caclulateHashForBlock(previosBlock) !== newBlock.header.previosHash) return false
   if (getMerkleRoot(newBlock.data) !== newBlock.header.merkleRoot) return false
   return true
 }
-const isVaildChain = (blockchainToValidate: Blockchain): boolean => {
-  if (JSON.stringify(blockchainToValidate[0]) !== JSON.stringify(getGenesisBlock())) return false
-  return _.every(blockchainToValidate, (block, index: number, list) => isVaildNewBlock(block, list[index - 1]))
-}
-const blockchain:Blockchain = [getGenesisBlock()]
+let blockchain:Blockchain = [getGenesisBlock()]
 
 export default class BlockchainService {  
   static getCurrentVersion = (): string => JSON.parse(fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf8')).version
@@ -67,12 +63,13 @@ export default class BlockchainService {
     const previosBlock = BlockchainService.getLatestBlock()
     const currentVersion = BlockchainService.getCurrentVersion()
     const nextIndex = previosBlock.header.index + 1
-    const previosHash = caclulateHashForBlcok(previosBlock)
+    const previosHash = caclulateHashForBlock(previosBlock)
     const nextTimestamp = getCurrentTimestamp()
     const merkleRoot: string = getMerkleRoot(blockData)
     const newBlockHeader = new BlockHeader(currentVersion, nextIndex, previosHash, nextTimestamp, merkleRoot)
     return new Block(newBlockHeader, blockData)
   }
+  static caclulateHashForBlock = caclulateHashForBlock
   static addBlock = (newBlock: Block): boolean => {
     if (isVaildNewBlock(newBlock, BlockchainService.getLatestBlock())) {
       blockchain.push(newBlock);
@@ -80,4 +77,9 @@ export default class BlockchainService {
     }
     return false;
   }
+  static isVaildChain = (blockchainToValidate: Blockchain): boolean => {
+    if (JSON.stringify(blockchainToValidate[0]) !== JSON.stringify(getGenesisBlock())) return false
+    return _.every(blockchainToValidate, (block, index: number, list) => isVaildNewBlock(block, list[index - 1]))
+  }
+  static setBlockChain = newBlockchain => blockchain = newBlockchain
 }
