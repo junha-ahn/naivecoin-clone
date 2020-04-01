@@ -15,5 +15,9 @@ export default {
   },
   api: {
     prefix: '/'
-  }
+  },
+  // 블록 생성 주기. in seconds
+  BLOCK_GENERATION_INTERVAL:  10,
+  // 난이도 조정 주기. in blocks
+  DIFFICULTY_ADJUSTMENT_INTERVAL: 10,
 };
