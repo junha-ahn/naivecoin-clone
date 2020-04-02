@@ -35,7 +35,16 @@ export default (app: Router) => {
   }));
   
   route.post('/mineBlock', container(async (req): Promise<Result> => {
-    const newBlock = BlockcahinService.generateNextBlock(req.body.data);
+    const {
+      data
+    } = req.body
+    if (data == null) {
+      return {
+        httpCode: 401,
+        message: 'body invaild',
+      }
+    }
+    const newBlock = BlockcahinService.generateNextBlock(data);
     if (!newBlock) {
       return {
         httpCode: 400,
