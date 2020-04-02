@@ -4,14 +4,8 @@ import {
 } from 'ws';
 import config from '../config'
 import Logger from '../loaders/logger'
-import {
-  addBlockToChain,
-  Block,
-  getBlockchain,
-  getLatestBlock,
-  isValidBlockStructure,
-  replaceChain
-} from './blockchain';
+import * as b from './blockchain';
+const {addBlockToChain, Block, getBlockchain, getLatestBlock, isValidBlockStructure, replaceChain} = b
 
 const sockets: WebSocket[] = [];
 
@@ -160,7 +154,7 @@ const connectToPeers = (newPeer: string): void => {
 
 initP2PServer(config.port.p2p)
 
-export default {
+export {
   connectToPeers,
   broadcastLatest,
   getSockets,

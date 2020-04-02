@@ -1,3 +1,5 @@
+node/wallet/*
+
 # Logs
 logs
 *.log

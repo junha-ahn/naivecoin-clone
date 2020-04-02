@@ -2,15 +2,24 @@ import * as CryptoJS from 'crypto-js'
 import * as _ from 'lodash'
 import config from "../config"
 import helpers from '../helpers'
-import {
+import * as s from './socket'
+import * as w from './wallet'
+import * as t from './transaction';
+const {
   broadcastLatest
-} from './socket'
-import {
-  UnspentTxOut,
+} = s
+const {
+  getPublicFromWallet,
+  getPrivateFromWallet,
+  createTransaction,
+} = w
+const {
+  getCoinbaseTransaction,
+  isValidAddress,
+  processTransactions,
   Transaction,
-  processTransactions
-} from './transaction' //추가됨
-
+  UnspentTxOut
+} = t
 const {
   BLOCK_GENERATION_INTERVAL,
   DIFFICULTY_ADJUSTMENT_INTERVAL,
@@ -61,20 +70,39 @@ const getAdjustedDifficulty = (latestBlock: Block, aBlockchain: Block[]) => {
 const getCurrentTimestamp = (): number => Math.round(new Date().getTime() / 1000)
 
 
-const generateNextBlock = (blockData: Transaction[]) => {
-  const previousBlock: Block = getLatestBlock()
-  const difficulty: number = getDifficulty(getBlockchain())
-  console.log('difficulty: ' + difficulty)
-  const nextIndex: number = previousBlock.index + 1
-  const nextTimestamp: number = getCurrentTimestamp()
-  const newBlock: Block = findBlock(nextIndex, previousBlock.hash, nextTimestamp, blockData, difficulty)
+const generateRawNextBlock = (blockData: Transaction[]) => {
+  const previousBlock: Block = getLatestBlock();
+  const difficulty: number = getDifficulty(getBlockchain());
+  const nextIndex: number = previousBlock.index + 1;
+  const nextTimestamp: number = getCurrentTimestamp();
+  const newBlock: Block = findBlock(nextIndex, previousBlock.hash, nextTimestamp, blockData, difficulty);
   if (addBlockToChain(newBlock)) {
-    broadcastLatest();
-    return newBlock;
+      broadcastLatest();
+      return newBlock;
   } else {
-    return null;
+      return null;
   }
-}
+
+};
+const generateNextBlock = () => {
+  const coinbaseTx: Transaction = getCoinbaseTransaction(getPublicFromWallet(), getLatestBlock().index + 1);
+  const blockData: Transaction[] = [coinbaseTx];
+  return generateRawNextBlock(blockData);
+};
+
+const generatenextBlockWithTransaction = (receiverAddress: string, amount: number) => {
+  if (!isValidAddress(receiverAddress)) {
+      throw Error('invalid address');
+  }
+  if (typeof amount !== 'number') {
+      throw Error('invalid amount');
+  }
+  const coinbaseTx: Transaction = getCoinbaseTransaction(getPublicFromWallet(), getLatestBlock().index + 1);
+  const tx: Transaction = createTransaction(receiverAddress, amount, getPrivateFromWallet(), unspentTxOuts);
+  const blockData: Transaction[] = [coinbaseTx, tx];
+  return generateRawNextBlock(blockData);
+};
+
 const findBlock = (index: number, previousHash: string, timestamp: number, data: Transaction[], difficulty: number): Block => {
   let nonce = 0;
   while (true) {
@@ -98,7 +126,7 @@ const isValidBlockStructure = (block: Block): boolean =>
   typeof block.hash === 'string' &&
   typeof block.previousHash === 'string' &&
   typeof block.timestamp === 'number' &&
-  typeof block.data === 'string'
+  typeof block.data === 'object'
 
 const isValidNewBlock = (newBlock: Block, previousBlock: Block): boolean => {
   if (!isValidBlockStructure(newBlock)) {
@@ -198,12 +226,14 @@ const replaceChain = (newBlocks: Block[]) => {
   }
 };
 
-export default {
+
+export {
   Block,
   getBlockchain,
   getLatestBlock,
   generateNextBlock,
   isValidBlockStructure,
   replaceChain,
-  addBlockToChain
+  addBlockToChain,
+  generatenextBlockWithTransaction,
 };
