@@ -2,6 +2,8 @@ import * as WebSocket from 'ws';
 import {
   Server
 } from 'ws';
+import config from '../config'
+import Logger from '../loaders/logger'
 import {
   addBlockToChain,
   Block,
@@ -31,7 +33,7 @@ const initP2PServer = (p2pPort: number) => {
   server.on('connection', (ws: WebSocket) => {
     initConnection(ws);
   });
-  console.log('listening websocket p2p port on: ' + p2pPort);
+  Logger.info('listening websocket p2p port on: ' + p2pPort);
 };
 
 const getSockets = () => sockets;
@@ -156,9 +158,11 @@ const connectToPeers = (newPeer: string): void => {
   });
 };
 
+initP2PServer(config.port.p2p)
+
 export default {
   connectToPeers,
   broadcastLatest,
-  initP2PServer,
   getSockets,
+  initP2PServer,
 };

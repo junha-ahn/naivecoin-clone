@@ -1,5 +1,5 @@
 {
-  "name": "onechain-clone",
+  "name": "navecoin-clone",
   "version": "1.0.0",
   "description": "learn blockchain",
   "main": "src/index.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/junha-ahn/onechain-clone.git"
+    "url": "git+https://github.com/junha-ahn/navecoin-clone.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/junha-ahn/onechain-clone/issues"
+    "url": "https://github.com/junha-ahn/navecoin-clone/issues"
   },
-  "homepage": "https://github.com/junha-ahn/onechain-clone#readme",
+  "homepage": "https://github.com/junha-ahn/navecoin-clone#readme",
   "devDependencies": {
     "@types/node": "^12.12.31",
     "nodemon": "^2.0.2",

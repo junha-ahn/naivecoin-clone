@@ -1,6 +1,7 @@
 import * as CryptoJS from 'crypto-js'
 import * as _ from 'lodash'
 import config from "../config"
+import helpers from '../helpers'
 
 const {
   BLOCK_GENERATION_INTERVAL,
@@ -27,10 +28,7 @@ class Block {
   }
 }
 
-const genesisBlock: Block = new Block(
-
-  0, '91a73664bc84c0baa1fc75ea6e4aa6d1d20c5df664c724e3159aefc2e1186627', '', 1465154705, 'my genesis block!!', 0, 0
-)
+const genesisBlock: Block = new Block(0, '91a73664bc84c0baa1fc75ea6e4aa6d1d20c5df664c724e3159aefc2e1186627', '', 1465154705, 'my genesis block!!', 0, 0)
 let blockchain: Block[] = [genesisBlock]
 
 const getBlockchain = (): Block[] => blockchain
@@ -69,6 +67,7 @@ const findBlock = (index: number, previousHash: string, timestamp: number, data:
   while (true) {
     const hash: string = calculateHash(index, previousHash, timestamp, data, difficulty, nonce);
     if (hashMatchesDifficulty(hash, difficulty)) {
+      console.log('findBlock : ', nonce)
       return new Block(index, hash, previousHash, timestamp, data, difficulty, nonce);
     }
     nonce++;
@@ -141,7 +140,7 @@ const hashMatchesBlockContent = (block: Block): boolean => {
   return blockHash === block.hash;
 };
 const hashMatchesDifficulty = (hash: string, difficulty: number): boolean => {
-  const hashInBinary: string = hexToBinary(hash);
+  const hashInBinary: string = helpers.hexToBinary(hash);
   const requiredPrefix: string = '0'.repeat(difficulty);
   return hashInBinary.startsWith(requiredPrefix);
 };
